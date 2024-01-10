@@ -1,0 +1,29 @@
+.filter-button:hover {
+    background-color: #3AB67D;
+    color: black;
+    border: 1px solid #f1f1f1;
+}
+
+.filter-button.selected {
+    background-color: #3AB67D;
+    color: black;
+    border: 1px solid #f1f1f1;
+}
+
+.expense-item:hover {
+    background-color: #f5d7d7;
+    cursor: pointer;
+}
+
+.icon-expense-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    border: 3px solid #EBEBEB;
+}
+
+.icon-expense {
+    width: 22px;
+    height: 22px;
+    color: #DE3C19;
+}

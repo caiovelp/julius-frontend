@@ -1,0 +1,52 @@
+.container {
+    margin-top: 20px;
+    background-color: white;
+}
+
+.saldo {
+    margin-left: 50px;
+    font-weight: bold;
+    color: #13714c;
+}
+
+.receita-mensal {
+    margin-left: 42px;
+    color: #3ab67d;
+    font-weight: bold;
+}
+
+.despesa-mensal {
+    margin-left: 53px;
+    color: red;
+    font-weight: bold;
+}
+
+.button-quick-access {
+    margin-top: 3px;
+    border-style: solid;
+    border-radius: 71px;
+    box-shadow: 2px 4px rgba(0,0,0,0.25);
+    width: 219px;
+    height: 40px;
+    font-size: 15px;
+    padding-bottom: 6px;
+}
+
+.receipt-icon {
+    margin-right: 20px;
+    width: 43px;
+    height: 31px;
+    color: #3ab67d;
+}
+
+.expense-icon {
+    margin-right: 20px;
+    width: 43px;
+    height: 31px;
+    color: red;
+}
+
+.chart-container {
+    width: 250px;
+    height: 250px;
+}

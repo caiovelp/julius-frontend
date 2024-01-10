@@ -1,0 +1,38 @@
+.notification-icon {
+    width: 56px;
+    height: 56px;
+    border: 1px solid #3ab67d;
+    border-radius: 14px;
+}
+
+.bell {
+    width: 28px;
+    height: 28px;
+    color: #13714c;
+}
+
+.user-icon {
+    width: 57px;
+    height: 57px;
+    margin-left: 25px;
+    border-radius: 12px;
+}
+
+.username {
+    margin-left: 21px;
+    margin-top: 20px;
+    margin-right: 21px;
+}
+
+.nav a {
+    color: #3ab67d !important;
+    font-weight: bold !important;
+    text-decoration: none;
+    font-size: large;
+    padding-top: 1em;
+
+}
+
+.nav a:hover {
+    color: #226d4a !important; 
+}

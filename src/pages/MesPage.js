@@ -18,16 +18,21 @@ const colorForKey = (key = '') => {
 const formatBRL = (v) =>
   (v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+// Tags que representam gastos do próprio usuário
+const PERSONAL_TAGS = ['Caio', 'Casal', 'Mylena'];
+const isTerceiros = (l) => l.Categoria?.nome === 'Terceiros';
+
 const MesPage = () => {
   const { yyyyMM } = useParams();
   const navigate = useNavigate();
-  const [userId, setUserId] = useState(null);
-  const [username, setUsername] = useState(null);
   const [walletId, setWalletId] = useState(null);
   const [orcamentoMensal, setOrcamentoMensal] = useState(0);
   const [currentMonth, setCurrentMonth] = useState(yyyyMM);
   const [lancamentos, setLancamentos] = useState([]);
   const tableRef = useRef(null);
+
+  // Carteira padrão do sistema
+  const DEFAULT_WALLET_ID = 'default-wallet';
 
   const parseMonth = (s) => {
     const [y, m] = s.split('-').map(Number);
@@ -52,11 +57,20 @@ const MesPage = () => {
   }, [currentMonth]);
 
   const agg = useMemo(() => {
-    const expenses = lancamentos.filter((l) => l.valor > 0);
-    const income = lancamentos.filter((l) => l.valor < 0);
-    const totalExpenses = expenses.reduce((s, l) => s + l.valor, 0);
-    const totalIncome = income.reduce((s, l) => s + Math.abs(l.valor), 0);
-    const conferidos = expenses.filter((l) => l.conferido).length;
+    const lancamentosFinanceiros = lancamentos.filter((l) => !isTerceiros(l));
+
+    // Totais reais sem "Terceiros" — refletem só fluxo próprio
+    const allExpenses = lancamentosFinanceiros.filter((l) => l.valor > 0);
+    const allIncome = lancamentosFinanceiros.filter((l) => l.valor < 0);
+    const totalExpenses = allExpenses.reduce((s, l) => s + l.valor, 0);
+    const totalIncome = allIncome.reduce((s, l) => s + Math.abs(l.valor), 0);
+    const conferidos = allExpenses.filter((l) => l.conferido).length;
+
+    // Lançamentos de tags pessoais — usados nos gráficos por cartão e por categoria
+    const personal = lancamentosFinanceiros.filter(
+      (l) => l.tag && PERSONAL_TAGS.includes(l.tag)
+    );
+    const personalExpenses = personal.filter((l) => l.valor > 0);
 
     const groupSum = (arr, keyFn) => {
       const map = {};
@@ -67,44 +81,39 @@ const MesPage = () => {
       return Object.entries(map).sort((a, b) => b[1] - a[1]);
     };
 
+    // Por tag: apenas tags pessoais
     const tagMap = {};
-    lancamentos.forEach((l) => {
+    personal.forEach((l) => {
       if (!l.tag) return;
       tagMap[l.tag] = (tagMap[l.tag] || 0) + Math.abs(l.valor);
     });
-    const porTag = Object.entries(tagMap).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    const porTag = Object.entries(tagMap).sort((a, b) => b[1] - a[1]);
 
     return {
       totalExpenses,
       totalIncome,
       saldo: totalIncome - totalExpenses,
       conferidos,
-      total: lancamentos.length,
-      porCartao: groupSum(expenses, (l) => l.cartao || 'Sem cartão'),
-      porCategoria: groupSum(expenses, (l) => l.Categoria?.nome || 'Sem categoria'),
+      total: lancamentosFinanceiros.length,
+      porCartao: groupSum(personalExpenses, (l) => l.cartao || 'Sem cartão'),
+      porCategoria: groupSum(personalExpenses, (l) => l.Categoria?.nome || 'Sem categoria'),
       porTag,
       tagTotal: porTag.reduce((s, [, v]) => s + v, 0),
     };
   }, [lancamentos]);
 
   useEffect(() => {
-    const id = localStorage.getItem('userId');
-    if (id) {
-      setUserId(id);
-      fetch(`http://localhost:3000/users/getUserById/${id}`)
-        .then((r) => (r.ok ? r.json() : null))
-        .then((d) => d && setUsername(d.username))
-        .catch(() => {});
-      fetch(`http://localhost:3000/wallets/getCarteiraByUserId/${id}`)
-        .then((r) => (r.ok ? r.json() : null))
-        .then((d) => {
-          if (d) {
-            setWalletId(d.id);
-            setOrcamentoMensal(d.orcamentoMensal || 0);
-          }
-        })
-        .catch(() => {});
-    }
+    // Busca a carteira padrão (primeira carteira do sistema)
+    fetch('http://localhost:3000/wallets')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data && Array.isArray(data) && data.length > 0) {
+          const wallet = data[0];
+          setWalletId(wallet.id);
+          setOrcamentoMensal(wallet.orcamentoMensal || 0);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const goToMonth = (m) => {

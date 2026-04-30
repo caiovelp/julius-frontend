@@ -5,7 +5,10 @@ import LancamentoTable from './LancamentoTable';
 const makeFetchMock = (lancamentos = []) =>
   jest.fn((url) => {
     if (url.includes('/category/')) {
-      return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([{ id: 1, nome: 'Alimentação e Bebida' }]),
+      });
     }
     if (url.includes('/agregacoes/')) {
       return Promise.resolve({
@@ -37,46 +40,48 @@ const defaultProps = { carteiraId: 1, month: '2026-04', orcamentoMensal: 1000 };
 
 test('renders table headers', async () => {
   render(<LancamentoTable {...defaultProps} />);
-  expect(screen.getByText('Data')).toBeInTheDocument();
-  expect(screen.getByText('Valor')).toBeInTheDocument();
-  expect(screen.getByText('Categoria')).toBeInTheDocument();
-  expect(screen.getByText('Ações')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('+ Nova linha')).toBeInTheDocument();
+  });
+  expect(screen.getByText('DATA')).toBeInTheDocument();
+  expect(screen.getByText('VALOR')).toBeInTheDocument();
+  expect(screen.getByText('CATEGORIA')).toBeInTheDocument();
 });
 
-test('shows "Novo Lançamento" button', async () => {
+test('shows "+ Nova linha" button when categories exist', async () => {
   render(<LancamentoTable {...defaultProps} />);
-  expect(screen.getByText('+ Novo Lançamento')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('+ Nova linha')).toBeInTheDocument();
+  });
 });
 
 test('shows "Nenhum lançamento encontrado" when list is empty', async () => {
   render(<LancamentoTable {...defaultProps} />);
   await waitFor(() => {
-    expect(screen.getByText('Nenhum lançamento encontrado')).toBeInTheDocument();
+    expect(screen.getByText('Nenhum lançamento. Clique em "+ Nova linha" para começar.')).toBeInTheDocument();
   });
 });
 
-test('shows agregacoes panel when data is loaded', async () => {
+test('clicking "+ Nova linha" shows inline creation row', async () => {
   render(<LancamentoTable {...defaultProps} />);
   await waitFor(() => {
-    expect(screen.getByText(/Orçamento/)).toBeInTheDocument();
-    expect(screen.getByText(/Saldo Disponível/)).toBeInTheDocument();
+    expect(screen.getByText('+ Nova linha')).toBeInTheDocument();
   });
-});
-
-test('clicking "Novo Lançamento" shows inline creation row', () => {
-  render(<LancamentoTable {...defaultProps} />);
-  fireEvent.click(screen.getByText('+ Novo Lançamento'));
+  fireEvent.click(screen.getByText('+ Nova linha'));
   expect(screen.getByPlaceholderText('Observação')).toBeInTheDocument();
-  expect(screen.getByPlaceholderText('Valor')).toBeInTheDocument();
+  expect(screen.getByPlaceholderText('0,00')).toBeInTheDocument();
 });
 
-test('cancels new entry creation when cancel button is clicked', () => {
+test('cancels new entry creation when cancel button is clicked', async () => {
   render(<LancamentoTable {...defaultProps} />);
-  fireEvent.click(screen.getByText('+ Novo Lançamento'));
+  await waitFor(() => {
+    expect(screen.getByText('+ Nova linha')).toBeInTheDocument();
+  });
+  fireEvent.click(screen.getByText('+ Nova linha'));
   // Cancel button is the X icon button (title="Cancelar")
   const cancelButton = screen.getByTitle('Cancelar');
   fireEvent.click(cancelButton);
-  expect(screen.getByText('+ Novo Lançamento')).toBeInTheDocument();
+  expect(screen.getByText('+ Nova linha')).toBeInTheDocument();
 });
 
 test('renders lancamentos from API', async () => {

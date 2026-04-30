@@ -4,7 +4,7 @@ Personal finance management web application. Modern React UI for tracking expens
 
 ## Features
 
-- User authentication (Firebase)
+- Optional login (skip authentication for personal use)
 - Wallet management and balance tracking
 - Monthly expense tracking with categories
 - Income/revenue tracking
@@ -28,6 +28,20 @@ Personal finance management web application. Modern React UI for tracking expens
 
 ```bash
 npm install
+```
+
+### Environment Setup
+
+Copy [.env.example](.env.example) to `.env`:
+
+```bash
+cp .env.example .env
+```
+
+Configure as needed:
+```env
+REACT_APP_GUEST_USER_ID=1
+REACT_APP_API_URL=http://localhost:3000
 ```
 
 ### Development Server
@@ -64,6 +78,20 @@ src/
 ├── App.js              # Root component
 └── index.js            # Entry point
 ```
+
+## Authentication & Login
+
+The app supports **optional login** for personal use:
+
+- **Default behavior**: Opens directly to the main wallet dashboard without login
+  - Uses `REACT_APP_GUEST_USER_ID` (default: `1`) as the default user
+  - Button: "Continuar sem login" (Continue without login) on the login page
+
+- **With authentication**: Toggle via backend `AUTH_ENABLED` flag
+  - Users must log in or create an account first
+  - Only available when backend has `AUTH_ENABLED=true`
+
+**For personal single-user setup**, no login is required. Just click "Continuar sem login" or the app redirects automatically.
 
 ## API Integration
 

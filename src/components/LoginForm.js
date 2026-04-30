@@ -1,6 +1,8 @@
 import React, {useState} from "react";
 import {Link, useNavigate} from 'react-router-dom';
 
+const GUEST_USER_ID = process.env.REACT_APP_GUEST_USER_ID || '1';
+
 const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
@@ -44,6 +46,10 @@ const LoginForm = () => {
             })
     };
 
+    const handleGuestLogin = () => {
+        navigate(`/carteira/${GUEST_USER_ID}`);
+    };
+
 
     return (
         <div className="container">
@@ -59,7 +65,9 @@ const LoginForm = () => {
                                 <div className="container d-flex align-items-center message-error">
                                     {messageError && <p className="mt-2">{messageError}</p>}
                                 </div>
-                                <div className="form-group mb-3"><button className="btn btn-primary d-block w-100" id="submitButton" type="submit">Login</button></div><Link to="/register" className="already" style={{marginTop: 20}}>Não possui uma conta? Faça o cadastro aqui.</Link>
+                                <div className="form-group mb-3"><button className="btn btn-primary d-block w-100" id="submitButton" type="submit">Login</button></div>
+                                <div className="form-group mb-2"><button className="btn btn-secondary d-block w-100" type="button" onClick={handleGuestLogin}>Continuar sem login</button></div>
+                                <Link to="/register" className="already" style={{marginTop: 20}}>Não possui uma conta? Faça o cadastro aqui.</Link>
                             </form>
                         </div>
                     </section>

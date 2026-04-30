@@ -1,24 +1,20 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import CadastroPage from "./pages/CadastroPage";
-import LoginPage from "./pages/LoginPage";
-import CarteiraPage from "./pages/CarteiraPage";
-import ConfiguracaoPage from "./pages/ConfiguracaoPage";
+import MesPage from "./pages/MesPage";
 
-// Default guest user ID when authentication is disabled
-const GUEST_USER_ID = process.env.REACT_APP_GUEST_USER_ID || '1';
+const getCurrentMonth = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`;
+};
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Root route redirects to guest wallet */}
-        <Route path="/" element={<Navigate to={`/carteira/${GUEST_USER_ID}`} replace />} />
-        
-        <Route path="/register" element={<CadastroPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/carteira/:id" element={<CarteiraPage />} />
-        <Route path="/configuracao/:id" element={<ConfiguracaoPage />} />
+        <Route path="/" element={<Navigate to={`/mes/${getCurrentMonth()}`} replace />} />
+        <Route path="/mes/:yyyyMM" element={<MesPage />} />
       </Routes>
     </Router>
   );

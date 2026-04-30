@@ -47,16 +47,20 @@
 /* ── Filters ── */
 .filter-bar {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
   padding: 14px 24px;
+}
+
+.filter-selects-row {
+  display: flex;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .filter-search-wrap {
   position: relative;
-  flex: 1;
-  min-width: 220px;
+  width: 100%;
 }
 
 .filter-search-icon {
@@ -342,6 +346,27 @@
 .btn-nova-linha:hover {
   background: #f3f4f6;
   color: #111;
+}
+
+.table-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-init-categorias {
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  background: #1a5c3e;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.btn-init-categorias:hover {
+  background: #145032;
 }
 
 /* ── Responsive ── */

@@ -17,6 +17,13 @@ const colorForKey = (key = '') => {
 const formatBRL = (v) =>
   (v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+const PERSONAL_TAGS = ['Caio', 'Casal', 'Mylena'];
+
+const DEFAULT_CATEGORIES = [
+  'Alimentação e Bebida', 'Bela', 'Conta', 'Economias',
+  'Entretenimento', 'Fixo', 'Higiene e Saúde', 'Outros', 'Transporte', 'Terceiros',
+];
+
 const parseDate = (dateStr) => {
   if (!dateStr) return '';
   const d = dateStr.split('T')[0];
@@ -81,7 +88,7 @@ const LancamentoTable = forwardRef(({
   const fetchCategorias = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/category/getCategoriasByWalletId/${carteiraId}`,
+        `http://localhost:3000/category/getCategorias`,
         { method: 'GET', headers: { 'Content-Type': 'application/json' } }
       );
 
@@ -199,6 +206,16 @@ const LancamentoTable = forwardRef(({
     setNewLancamento({});
   };
 
+  // Aplica a regra: tag fora das pessoais → categoria Terceiros
+  const handleNewTag = (tag) => {
+    const updates = { tag };
+    if (tag && !PERSONAL_TAGS.includes(tag)) {
+      const terceiros = categorias.find((c) => c.nome === 'Terceiros');
+      if (terceiros) updates.categoriaId = String(terceiros.id);
+    }
+    setNewLancamento((prev) => ({ ...prev, ...updates }));
+  };
+
   const saveNewLancamento = async () => {
     if (!newLancamento.data || newLancamento.valor === undefined || newLancamento.valor === '') {
       alert('Data e Valor são obrigatórios');
@@ -213,7 +230,7 @@ const LancamentoTable = forwardRef(({
       const payload = {
         ...newLancamento,
         valor: parseFloat(newLancamento.valor),
-        categoriaId: newLancamento.categoriaId ? parseInt(newLancamento.categoriaId) : undefined,
+        categoriaId: newLancamento.categoriaId ? newLancamento.categoriaId : undefined,
       };
 
       const response = await fetch(`http://localhost:3000/lancamentos/${carteiraId}`, {
@@ -335,48 +352,50 @@ const LancamentoTable = forwardRef(({
           />
         </div>
 
-        <select
-          className="filter-select"
-          value={filters.tag}
-          onChange={(e) => setFilters({ ...filters, tag: e.target.value })}
-        >
-          <option value="">Todas as tags</option>
-          {uniqueTags.map((tag) => (
-            <option key={tag} value={tag}>{tag}</option>
-          ))}
-        </select>
+        <div className="filter-selects-row">
+          <select
+            className="filter-select"
+            value={filters.tag}
+            onChange={(e) => setFilters({ ...filters, tag: e.target.value })}
+          >
+            <option value="">Todas as tags</option>
+            {uniqueTags.map((tag) => (
+              <option key={tag} value={tag}>{tag}</option>
+            ))}
+          </select>
 
-        <select
-          className="filter-select"
-          value={filters.cartao}
-          onChange={(e) => setFilters({ ...filters, cartao: e.target.value })}
-        >
-          <option value="">Todos os cartões</option>
-          {uniqueCartoes.map((cartao) => (
-            <option key={cartao} value={cartao}>{cartao}</option>
-          ))}
-        </select>
+          <select
+            className="filter-select"
+            value={filters.cartao}
+            onChange={(e) => setFilters({ ...filters, cartao: e.target.value })}
+          >
+            <option value="">Todos os cartões</option>
+            {uniqueCartoes.map((cartao) => (
+              <option key={cartao} value={cartao}>{cartao}</option>
+            ))}
+          </select>
 
-        <select
-          className="filter-select"
-          value={filters.categoria}
-          onChange={(e) => setFilters({ ...filters, categoria: e.target.value })}
-        >
-          <option value="">Todas as categorias</option>
-          {categorias.map((cat) => (
-            <option key={cat.id} value={cat.id}>{cat.nome}</option>
-          ))}
-        </select>
+          <select
+            className="filter-select"
+            value={filters.categoria}
+            onChange={(e) => setFilters({ ...filters, categoria: e.target.value })}
+          >
+            <option value="">Todas as categorias</option>
+            {categorias.map((cat) => (
+              <option key={cat.id} value={cat.id}>{cat.nome}</option>
+            ))}
+          </select>
 
-        <select
-          className="filter-select"
-          value={filters.conferido}
-          onChange={(e) => setFilters({ ...filters, conferido: e.target.value })}
-        >
-          <option value="">Conferido: todo</option>
-          <option value="true">Conferidos</option>
-          <option value="false">Não conferidos</option>
-        </select>
+          <select
+            className="filter-select"
+            value={filters.conferido}
+            onChange={(e) => setFilters({ ...filters, conferido: e.target.value })}
+          >
+            <option value="">Conferido: todo</option>
+            <option value="true">Conferidos</option>
+            <option value="false">Não conferidos</option>
+          </select>
+        </div>
       </div>
 
       {/* Table */}
@@ -401,7 +420,9 @@ const LancamentoTable = forwardRef(({
             {lancamentos.length === 0 && !creatingNew && (
               <tr>
                 <td colSpan="11" className="empty-table-row">
-                  Nenhum lançamento. Clique em "+ Nova linha" para começar.
+                  {categorias.length === 0
+                    ? 'Inicialize as categorias antes de criar lançamentos.'
+                    : 'Nenhum lançamento. Clique em "+ Nova linha" para começar.'}
                 </td>
               </tr>
             )}
@@ -584,7 +605,7 @@ const LancamentoTable = forwardRef(({
                     type="text"
                     placeholder="Tag"
                     value={newLancamento.tag || ''}
-                    onChange={(e) => setNewLancamento({ ...newLancamento, tag: e.target.value })}
+                    onChange={(e) => handleNewTag(e.target.value)}
                   />
                 </td>
                 <td>
@@ -667,11 +688,13 @@ const LancamentoTable = forwardRef(({
         <span className="table-count">
           {loading ? 'Carregando...' : `${lancamentos.length} linha(s)`}
         </span>
-        {!creatingNew && (
-          <button className="btn-nova-linha" onClick={startNewEntry}>
-            + Nova linha
-          </button>
-        )}
+        <div className="table-footer-actions">
+          {!creatingNew && (
+            <button className="btn-nova-linha" onClick={startNewEntry}>
+              + Nova linha
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Modal criar grupo */}

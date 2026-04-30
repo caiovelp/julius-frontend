@@ -1,0 +1,278 @@
+.mes-page {
+  background: #f8f7f5;
+  min-height: 100vh;
+  padding: 0 0 40px 0;
+}
+
+/* ── Top bar ── */
+.mes-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px 16px;
+  background: white;
+  border-bottom: 1px solid #eeece8;
+}
+
+.mes-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mes-brand-icon {
+  width: 36px;
+  height: 36px;
+  background: #1a5c3e;
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.mes-brand-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+  line-height: 1.2;
+}
+
+.mes-brand-sub {
+  font-size: 12px;
+  color: #888;
+}
+
+.btn-novo-lancamento {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #1a5c3e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-novo-lancamento:hover {
+  background: #145032;
+}
+
+/* ── Month navigation ── */
+.month-nav {
+  display: flex;
+  align-items: center;
+  padding: 12px 32px;
+  background: white;
+  border-bottom: 1px solid #eeece8;
+  gap: 4px;
+}
+
+.month-arrow {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.month-arrow:hover {
+  background: #f3f4f6;
+}
+
+.month-tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.month-tab {
+  background: none;
+  border: none;
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.month-tab:hover {
+  background: #f3f4f6;
+  color: #111;
+}
+
+.month-tab.active {
+  background: #111;
+  color: white;
+  font-weight: 600;
+}
+
+/* ── Summary cards ── */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 16px;
+  padding: 24px 32px 0;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px 24px;
+  border: 1px solid #eeece8;
+}
+
+.summary-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.summary-big {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.saldo-color { color: #1a7a58; }
+.receita-color { color: #16a34a; }
+.despesa-color { color: #dc2626; }
+
+.summary-hint {
+  font-size: 12px;
+  color: #888;
+}
+
+/* ── Aggregation charts ── */
+.agg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 16px 32px 0;
+}
+
+.agg-card {
+  background: white;
+  border-radius: 10px;
+  padding: 16px 20px;
+  border: 1px solid #eeece8;
+}
+
+.agg-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 14px;
+}
+
+.agg-header-total {
+  font-size: 12px;
+  color: #888;
+  font-weight: 400;
+}
+
+.agg-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agg-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.agg-item-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.agg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.agg-name {
+  flex: 1;
+  color: #444;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agg-val {
+  color: #111;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.agg-track {
+  height: 3px;
+  background: #f0f0ee;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.agg-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .summary-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .summary-saldo {
+    grid-column: span 2;
+  }
+  .agg-grid {
+    grid-template-columns: 1fr;
+  }
+  .month-tab {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .mes-topbar,
+  .month-nav,
+  .summary-grid,
+  .agg-grid {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .summary-saldo {
+    grid-column: span 1;
+  }
+  .summary-big {
+    font-size: 22px;
+  }
+}

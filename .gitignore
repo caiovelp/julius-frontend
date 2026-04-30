@@ -41,3 +41,4 @@ coverage/
 .parcel-cache/
 .eslintcache
 *.tsbuildinfo
+julius.code-workspace
